@@ -309,10 +309,17 @@ const EeoEditor = () => {
     const { minPoint, prevHasContentWithoutSection, nextHasContentWithoutSection, isCrossQuestion } = getDataCache();
 
     // 选区后有剩余部分，并且是跨题的需要移动
-    if (nextHasContentWithoutSection && isCrossQuestion) {
+    if (prevHasContentWithoutSection && nextHasContentWithoutSection && isCrossQuestion) {
       editorRef.current.moveNodes({
         at: [+minPoint.path[0] + 1],
         to: [+minPoint.path[0] + 2],
+      });
+      return;
+    }
+    if (!prevHasContentWithoutSection && nextHasContentWithoutSection && isCrossQuestion) {
+      editorRef.current.moveNodes({
+        at: [+minPoint.path[0]],
+        to: [+minPoint.path[0] + 1],
       });
     }
   };
