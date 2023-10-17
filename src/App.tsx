@@ -1,5 +1,5 @@
 // import Image from '@/page/Image';
-import Demo1 from '@/page/Demo1-1';
+import Demo1 from '@/page/text-example/ExtractVariable';
 import './app.less';
 
 function App() {
