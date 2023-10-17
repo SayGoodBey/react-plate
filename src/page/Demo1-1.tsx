@@ -153,79 +153,6 @@ const EeoEditor = () => {
     [],
   );
 
-  const handleChange = () => {
-    // setInitialValue('<div><p>哈哈哈<em>999</em></p></div>');
-    // setInitialValue('<span>123</span>');
-  };
-
-  const handleMoveNode = () => {
-    editorRef.current.moveNodes({
-      // at: [0],
-      to: [0],
-    });
-    console.log('editor', editorRef.current.children);
-  };
-
-  const handleLiftNodes = () => {
-    editorRef.current.liftNodes({ at: [0, 0, 0], mode: 'lowest' });
-  };
-
-  const handleSplitNodes = () => {
-    editorRef.current.splitNodes();
-    // editorRef.current.splitNodes();
-  };
-
-  const handleGetSection = () => {
-    console.log('editorRef.current--', editorRef.current);
-    const selection = editorRef.current.selection;
-    const anchor = selection.anchor;
-    const focus = selection.focus;
-    console.log('selection---', selection);
-    console.log('anchor---', anchor);
-    console.log('focus---', focus);
-  };
-
-  // 两端拆分节点 拆分 跨块元素 1. 需要把切分的元素移动到顶层，2. 选中的是完整的同级，需要去掉包裹元素
-  const handlePatch = () => {
-    const selection = editorRef.current.selection;
-    const anchor = selection.anchor;
-    const focus = selection.focus;
-
-    const [minPoint, maxPoint] = orderByPoint(anchor, focus);
-
-    editorRef.current.splitNodes({ at: maxPoint });
-    editorRef.current.splitNodes({ at: minPoint });
-    console.log('editorRef-children---', editorRef.current.children);
-  };
-
-  const handleMovePatch = () => {
-    const selection = editorRef.current.selection;
-    const anchor = selection.anchor;
-    const focus = selection.focus;
-
-    const [minPoint, maxPoint] = orderByPoint(anchor, focus);
-
-    console.log('minPoint.path[0]---', minPoint.path[0]);
-    console.log('maxPoint.path[0]---', maxPoint.path[0]);
-    editorRef.current.insertNodes(
-      {
-        type: 'div',
-        className: 'split_wrap',
-        children: [{ text: '' }],
-      },
-      { at: [maxPoint.path[0] + 1] },
-    );
-    //移动的时候先移动到maxPoint
-    editorRef.current.moveNodes({
-      to: [maxPoint.path[0] + 1, 0],
-    });
-    editorRef.current.moveNodes({
-      at: [maxPoint.path[0]],
-      to: [maxPoint.path[0] - 1],
-    });
-    // 根据path
-  };
-
   const isNewOperate = useRef(false);
   const minMaxPoint = useRef([]);
   const handleSplitMovePatch = () => {
@@ -242,7 +169,7 @@ const EeoEditor = () => {
     // 第三步 移除newQuestion 里面的split元素
     removeSplitInQuestion();
 
-    // 第五步 判断是否移动 移动新试题到正确位置 minPoint + 1
+    //第五步 判断是否移动 移动新试题到正确位置 minPoint + 1
 
     handleMove();
     // 第六步 后面指针没有选择完剩余部分处理
@@ -521,7 +448,7 @@ const EeoEditor = () => {
 
   // 按照选区两个端点拆分节点
   const splitBySection = () => {
-    console.log('editorRef-children---', editorRef.current.children);
+    console.log(' editorRef.current.children---before', editorRef.current.children);
     const [minPoint, maxPoint] = minMaxPoint.current;
     console.log('sectionIsOverallOneQuestion()---', sectionIsOverallOneQuestion());
     if (sectionIsOverallOneQuestion()) {
@@ -529,6 +456,7 @@ const EeoEditor = () => {
     }
     editorRef.current.splitNodes({ at: maxPoint });
     editorRef.current.splitNodes({ at: minPoint });
+    console.log(' editorRef.current.children---after', editorRef.current.children);
   };
   // 选区选的是一道题，不用走拆分，切割会导致之后判断是不是剩余有问题
   const sectionIsOverallOneQuestion = () => {
@@ -571,25 +499,12 @@ const EeoEditor = () => {
     const parentPath = path.slice(0, -1);
     return editorRef.current.node(parentPath)[0];
   };
-
-  const handleUnwrapNodes = () => {
-    editorRef.current.unwrapNodes({ split: true });
-  };
   return (
     <div className="app">
       <PlateProvider onChange={onChangeData} plugins={plugins} editorRef={editorRef}>
         <Plate editableProps={editableProps} />
         <ResetPluginsEffect initialValue={initialValue} plugins={plugins} />
       </PlateProvider>
-      {/* 
-      <button onClick={handleChange}>切换initialValue</button>
-      <button onClick={handleMoveNode}>moveNode</button>
-      <button onClick={handleLiftNodes}>liftNodes</button>
-      <button onClick={handleSplitNodes}>splitNodes</button>
-      <button onClick={handleGetSection}>getSection</button>
-      <button onClick={handlePatch}>多次同步操作拆分</button>
-      <button onClick={handleMovePatch}>move 拆分</button>
-      <button onClick={handleUnwrapNodes}>unwrapNodes</button> */}
       <button onClick={handleSplitMovePatch}>split move 拆分</button>
       <button onClick={changeToCompQuestion}>切换综合题1个</button>
       <button onClick={changeToSimpleQuestion}>切换普通题</button>
